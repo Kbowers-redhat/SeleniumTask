@@ -25,7 +25,6 @@ public class SlovnikTest {
 
     @After
     public void tearDown() {
-        webDriver.get(baseUrl);
         webDriver.close();
     }
 
