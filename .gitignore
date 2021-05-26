@@ -1,0 +1,7 @@
+# Intellij Idea private project files
+*.iml
+*.ipr
+*.iws
+*.idea
+
+target*
