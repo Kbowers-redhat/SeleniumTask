@@ -4,8 +4,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.*;
+
+import java.util.ArrayList;
 import java.util.logging.*;
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.Assert.assertTrue;
 
 import org.openqa.selenium.WebDriver;
 
@@ -34,9 +37,10 @@ public class SlovnikTest {
         clickSlovnikTab();
         translate("test");
         isPronunciationDisplayed();
-        getLanguagesFromDropdown();
-        verifyDropdownAndBottomSame();
-        getLanguagesFromBottom();
+        List dropdown = slovnikFramework.getLanguagesFromDropdown(webDriver);
+        List bottom = slovnikFramework.getLanguagesFromBottom(webDriver);
+        getLanguagesFromDropdownTest(dropdown);
+        verifyDropdownAndBottomSame(dropdown, bottom);
         Logger logger = Logger.getLogger(SlovnikTest.class.getName());
         logger.log(Level.WARNING, "The test is almost over");
         printAriaLabelValue();
@@ -63,41 +67,14 @@ public class SlovnikTest {
         Boolean pronunciationDisplayed = !webDriver.findElements(By.className("TranslatePage-word--pronunciation")).isEmpty();
         assertThat(pronunciationDisplayed).isTrue();
     }
-    private void getLanguagesFromDropdown() {
-        webDriver.findElement(By.xpath("//*[@id=\"__next\"]/div/header/div[2]/form/div[2]/div[1]/button/span")).click();
-        List<WebElement> dropdownLanguages  = webDriver.findElements(By.className("Form-element-selectDropdown-item"));
-        for (int i = 0;i<dropdownLanguages.size(); i++) {
-            System.out.println(dropdownLanguages.get(i).getText());
-        }
-        Assert.assertEquals(dropdownLanguages.size(), 7);
+    private void getLanguagesFromDropdownTest(List dropdown) {
+        Assert.assertEquals(dropdown.size(), 7);
     }
-    private void getLanguagesFromBottom() {
-        webDriver.get("https://slovnik.seznam.cz/");
-        List<WebElement> footerLanguages  = webDriver.findElements(By.className("Footer-text-link"));
-        for (int i = 0;i<7; i++) {
-            System.out.println(footerLanguages.get(i).getText());
-        }
-    }
-    private void verifyDropdownAndBottomSame() {
-        List<WebElement> footerLanguages  = webDriver.findElements(By.className("Footer-text-link"));
-        List<WebElement> dropdownLanguages  = webDriver.findElements(By.className("Form-element-selectDropdown-item"));
-        for (int i = 0;i<dropdownLanguages.size(); i++) {
-            for (int j = 0; j < dropdownLanguages.size(); j++) {
-                if (dropdownLanguages.get(i).getText().equals(footerLanguages.get(j).getText())) {
-                    Assert.assertEquals(dropdownLanguages.get(i).getText(), footerLanguages.get(j).getText());
-                    break;
-                }
-            }
-        }
-
+    private void verifyDropdownAndBottomSame(List dropdown, List bottom) {
+        assertThat(dropdown).hasSameElementsAs(bottom);
     }
     private void printAriaLabelValue() {
         String ariaLabel = webDriver.findElement(By.id("loginBadgeEl")).getAttribute("aria-label");
         System.out.println(ariaLabel);
     }
-
-
-
-
-
 }
