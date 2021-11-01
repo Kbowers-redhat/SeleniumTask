@@ -1,4 +1,5 @@
 
+import io.github.bonigarcia.wdm.managers.ChromeDriverManager;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,16 +20,15 @@ import java.util.concurrent.TimeUnit;
 public class SlovnikTest {
 
     private String baseUrl = "https://www.seznam.cz/";
-    private String pathToChromeDriver = "/home/kbowers/Downloads/chromedriver_linux64/chromedriver";
     private WebDriver webDriver;
     private SlovnikFramework slovnikFramework = new SlovnikFramework();
 
     /**
-     * Sets up the ChromeDriver property and goes to the specified URL
+     * Sets up the ChromeDriver and goes to the specified URL
      */
     @Before
     public void setUp() {
-        System.setProperty("webdriver.chrome.driver", pathToChromeDriver);
+        ChromeDriverManager.getInstance().setup();
         webDriver = new ChromeDriver();
         webDriver.get(baseUrl);
     }
