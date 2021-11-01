@@ -5,14 +5,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.*;
 
-import java.util.ArrayList;
 import java.util.logging.*;
+
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.Assert.assertTrue;
 
 import org.openqa.selenium.WebDriver;
 
 import org.openqa.selenium.chrome.ChromeDriver;
+
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -23,17 +23,21 @@ public class SlovnikTest {
     private WebDriver webDriver;
     private SlovnikFramework slovnikFramework = new SlovnikFramework();
 
+    /**
+     * Sets up the ChromeDriver property and goes to the specified URL
+     */
     @Before
     public void setUp() {
         System.setProperty("webdriver.chrome.driver", pathToChromeDriver);
         webDriver = new ChromeDriver();
         webDriver.get(baseUrl);
-        Logger logger = Logger.getLogger(SlovnikTest.class.getName());
-
     }
 
+    /**
+     * Runs the specified tests and returns to the base URL.
+     */
     @Test
-    public void simpleTest() throws Exception {
+    public void simpleTest() {
         clickSlovnikTab();
         translate("test");
         isPronunciationDisplayed();
@@ -47,32 +51,65 @@ public class SlovnikTest {
         webDriver.get(baseUrl);
     }
 
+    /**
+     * Closes the webdriver.
+     */
     @After
     public void tearDown() {
         webDriver.close();
     }
 
+    /**
+     * Clicks on the slovnik tab from the baseUrl.
+     */
     private void clickSlovnikTab() {
-        webDriver.findElement(By.xpath("//*[@id=\"hp-app\"]/div/div[1]/div[2]/div/div/div[1]/header/div/div/div[2]/ul/li[6]/button/span[1]")).click();
+        List<WebElement> li = webDriver.findElements(By.className("tab-button__title-inactive"));
+        li.get(5).click();
     }
 
-    private void translate(String wordForTranslation) throws Exception {
-        WebElement searchBar = webDriver.findElement(By.xpath("//*[@id=\"slovnik-input\"]"));
+    /**
+     * Enters a word in the textbox to be translated and presses enter.
+     *
+     * @param wordForTranslation the word that will be entered into the search box and translated
+     */
+    private void translate(String wordForTranslation) {
+        WebElement searchBar = webDriver.findElement(By.id("slovnik-input"));
         searchBar.sendKeys(wordForTranslation);
-        WebElement textbox = webDriver.findElement(By.xpath("//*[@id=\"hp-app\"]/div/div[1]/div[2]/div/div/div[1]/header/div/div/div[2]/div[1]/form/button"));
+        WebElement textbox = webDriver.findElement(By.cssSelector("[data-dot=search-button]"));
         textbox.sendKeys(Keys.ENTER);
     }
+
+    /**
+     * Checks whether there is a pronunciation element on the webpage.
+     */
     private void isPronunciationDisplayed() {
         webDriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
         Boolean pronunciationDisplayed = !webDriver.findElements(By.className("TranslatePage-word--pronunciation")).isEmpty();
         assertThat(pronunciationDisplayed).isTrue();
     }
+
+    /**
+     * Tests whether the dropdown list contains 7 languages.
+     *
+     * @param dropdown contains a list of languages from the dropdown
+     */
     private void getLanguagesFromDropdownTest(List dropdown) {
         Assert.assertEquals(dropdown.size(), 7);
     }
+
+    /**
+     * Tests whether the languages from the dropdown and the footer are the same.
+     *
+     * @param dropdown contains a list of languages from the dropdown
+     * @param bottom   contains a list of  languages from the footer
+     */
     private void verifyDropdownAndBottomSame(List dropdown, List bottom) {
         assertThat(dropdown).hasSameElementsAs(bottom);
     }
+
+    /**
+     * prints out the ariaLabel of the element with id loginBadgeEl
+     */
     private void printAriaLabelValue() {
         String ariaLabel = webDriver.findElement(By.id("loginBadgeEl")).getAttribute("aria-label");
         System.out.println(ariaLabel);
